@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Image, StyleSheet, View, Text, TextInput, Button, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
+import { get } from 'react-native/Libraries/Utilities/PixelRatio';
 
 const styles = StyleSheet.create(
     {
@@ -32,12 +33,17 @@ class FriendList extends Component{
             sendFriendId: 0,
             friendsarray: [],
             friendrequestArray: []
+            
         };
     }
     
+    
     componentDidMount() {
         console.log("mounted");
-        getASyncData('@id').then((val) => this.setState({ id: parseInt(val) })).then(this.getFriendList())
+        getASyncData('@id').then((val) => this.setState({ id: parseInt(val) }))
+        .then(() =>{this.getFriendList();
+        this.getFriendRequest();
+        })
 
     }
     
@@ -61,7 +67,7 @@ class FriendList extends Component{
             })
             .then((responseJson) => {
                 this.setState({ friendsarray: responseJson})
-                console.log(responseJson)
+                console.log("friend array: ",responseJson)
             })
             .catch((error) => {
                 console.log(error);
@@ -80,7 +86,7 @@ class FriendList extends Component{
             },
             
         })
-            .then((response) => {response.text();
+            .then((response) => {
             console.log(response.status);
             if(response.status === 201)
             {
@@ -99,6 +105,29 @@ class FriendList extends Component{
             .catch((error) => {
                 console.log(error);
             })
+    }
+
+    getFriendRequest = async () => {
+        const value = await AsyncStorage.getItem('@xauth');
+        const id = this.state.id;
+        const link = "http://10.0.2.2:3333/api/1.0.0/user/" + id +"/friends"
+
+        return fetch(link, {
+            'headers': {
+                'X-Authorization': value
+            }
+        })
+        .then((response) => {
+            console.log(response.status)
+            return response.json()
+        })
+        .then((responseJson) => {
+            console.log("req array:",responseJson)
+            this.setState({ friendrequestArray: responseJson })
+        })
+        .catch((error) => {
+            console.log(error);
+        })
     }
     
     
