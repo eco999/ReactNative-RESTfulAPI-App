@@ -42,7 +42,7 @@ class FriendList extends Component{
         console.log("mounted");
         getASyncData('@id').then((val) => this.setState({ id: parseInt(val) }))
         .then(() =>{this.getFriendList();
-        this.getFriendRequest();
+        this.getFriendRequests();
         })
 
     }
@@ -107,10 +107,10 @@ class FriendList extends Component{
             })
     }
 
-    getFriendRequest = async () => {
+    getFriendRequests = async () => {
         const value = await AsyncStorage.getItem('@xauth');
-        const id = this.state.id;
-        const link = "http://10.0.2.2:3333/api/1.0.0/user/" + id +"/friends"
+        
+        const link = "http://10.0.2.2:3333/api/1.0.0/friendrequests"
 
         return fetch(link, {
             'headers': {
@@ -118,7 +118,7 @@ class FriendList extends Component{
             }
         })
         .then((response) => {
-            console.log(response.status)
+            console.log("req array response",response.status)
             return response.json()
         })
         .then((responseJson) => {
@@ -143,11 +143,10 @@ class FriendList extends Component{
                 <FlatList data={this.state.friendrequestArray}
                 renderItem={({item}) => (
                     <View>
-                        <Text>ID: {item.id} Name: {item.first_name} {item.last_name}</Text>
+                        <Text>ID: {item.user_id}, Name: {item.first_name} {item.last_name}</Text>
                     </View>
                 
                 )}
-                keyExtractor={(item,index) => item.id.toString()}
                 />
 
 
@@ -156,10 +155,9 @@ class FriendList extends Component{
                 data={this.state.friendsarray} 
                 renderItem={({item}) => (
                     <View>
-                      <Text>ID: {item.id} Name: {item.first_name} {item.last_name}</Text>
+                      <Text>ID: {item.user_id}, Name: {item.first_name} {item.last_name}</Text>
                     </View>
                 )}
-                keyExtractor={(item,index) => item.id.toString()}
                 />
 
             </View>
