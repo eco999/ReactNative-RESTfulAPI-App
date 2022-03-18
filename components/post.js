@@ -103,6 +103,39 @@ class PostScr extends Component {
             })
     }
 
+    deleteSelectedPost = async (id ,postId) => {
+        const value = await AsyncStorage.getItem('@xauth');
+        
+        const link = "http://10.0.2.2:3333/api/1.0.0/user/" + id + "/post/" + postId ;
+        return fetch(link, {
+            'method': 'delete',
+            'headers': {
+                'X-Authorization': value
+            }
+        })
+            .then((response) => {
+                console.log(response.status)
+                if(response.status === 200)
+                {
+                    this.setState({ 
+                        selectedPostAuthorFirst: "",
+                        selectedPostAuthorLast: "",
+                        selectedPostLikes: 0,
+                        selectedPostText: "",
+                        selectedPostTime: ""
+                    })
+                }
+                
+
+            })
+            
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
+    
+
     render() {
         const { navigation } = this.props;
         return (
