@@ -21,6 +21,16 @@ const getASyncData = async (itemName) => {
     }
 }
 
+const removeValue = async (itemName) => {
+    try {
+      await AsyncStorage.removeItem(itemName)
+    } catch(e) {
+      // remove error
+    }
+  
+    console.log('Done.')
+  }
+
 
 class UserInformation extends Component {
 
@@ -121,6 +131,33 @@ class UserInformation extends Component {
             })
     }
 
+    logOut = async () => {
+        const value = await AsyncStorage.getItem('@xauth');
+        const id = this.state.id;
+        const { navigation } = this.props;
+        return fetch("http://10.0.2.2:3333/api/1.0.0/logout", {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Authorization': value
+            },
+        })
+            .then((response) => {
+            if(response.status === 200)
+            {
+                console.log("logged out")
+            }
+            })
+            .then((responseJson) => {
+                removeValue('@xauth')
+                removeValue('@id')
+                navigation.replace('Login')
+            })
+            .catch((error) => {
+                throw error;
+            })
+    }
+
 
 
     render() {
@@ -141,6 +178,8 @@ class UserInformation extends Component {
 
                 <Text>View friends</Text>
                 <Button title='View friends' onPress={() => navigation.navigate('Friend')} />
+                <Text>Logout</Text>
+                <Button title='Logout' onPress={() => {this.logOut();}} />
             </View>
 
         )
