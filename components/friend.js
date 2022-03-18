@@ -149,6 +149,25 @@ class FriendList extends Component{
         })
     }
 
+    deleteReq = async (id) => {
+        const value = await AsyncStorage.getItem('@xauth');
+        const link = "http://10.0.2.2:3333/api/1.0.0/friendrequests/" + id
+        
+        return fetch(link, {
+            method: 'delete',
+            'headers': {
+                'X-Authorization': value
+            }
+        })
+        .then((response)=> {
+            console.log("delete req response:", response.status)
+            this.getFriendRequests();
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+    }
+
     
     render(){
         const { navigation } = this.props;
@@ -164,6 +183,7 @@ class FriendList extends Component{
                     <View>
                         <Text>ID: {item.user_id}, Name: {item.first_name} {item.last_name}</Text>
                         <Button title="Accept" onPress={() => this.acceptReq(item.user_id)} />
+                        <Button title="Delete" onPress={() => this.deleteReq(item.user_id)} />
                     </View>
                 
                 )}
@@ -175,7 +195,7 @@ class FriendList extends Component{
                 data={this.state.friendsarray} 
                 renderItem={({item}) => (
                     <View>
-                      <Text>ID: {item.user_id}, Name: {item.first_name} {item.last_name}</Text>
+                      <Text>ID: {item.user_id}, Name: {item.user_givenname} {item.user_familyname}</Text>
                     </View>
 
                 )}
