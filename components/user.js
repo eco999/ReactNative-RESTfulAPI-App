@@ -8,6 +8,7 @@ const getASyncData = async (itemName) => {
         const value = await AsyncStorage.getItem(itemName)
         if (value !== null) {
             // value previously stored
+            return value
         }
     } catch (e) {
         // error reading value
@@ -21,17 +22,18 @@ class UserInformation extends Component {
 
         this.state = {
             id: 0,
-            email: "",
-            password: ""
+            firstName: "",
+            lastName: "",
+            email: ""
         };
     }
     
-    
 
-    componentDidMount(){
-        getASyncData('@id').then((val) => console.log("hi ",val));
-        
-      }
+
+    componentDidMount() {
+        console.log("mounted");
+        getASyncData('@id').then((val) =>this.setState({ id: val}))
+    }
     
       
 
@@ -40,7 +42,11 @@ class UserInformation extends Component {
         const { navigation } = this.props;
         return (
             <View>
-                <Text>{id}</Text>
+                <Text>Your User ID: {this.state.id}</Text>
+                <Text>First name: {this.state.firstName}</Text>
+                <Text>Last name: {this.state.lastName}</Text>
+                <Text>Email: {this.state.email}</Text>
+                
             </View>
         )
     }
