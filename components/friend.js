@@ -1,14 +1,14 @@
 import 'react-native-gesture-handler'
 import React, { Component } from 'react';
-import { Image, StyleSheet, View, Text, TextInput, Button, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FlatList } from 'react-native-gesture-handler';
-import { get } from 'react-native/Libraries/Utilities/PixelRatio';
+import { FlatList, Switch } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create(
     {
         textbox: { borderWidth: 1, padding: 3, marginBottom: 5 },
-        container: { marginBottom: 5 }
+        container: { marginBottom: 5 },
+        sectionBorder: { fontSize: 20 , marginTop: 5, borderTopWidth: 2, padding: 3}
     });
 
 const getASyncData = async (itemName) => {
@@ -32,7 +32,12 @@ class FriendList extends Component{
             id: 0,
             sendFriendId: 0,
             friendsarray: [],
-            friendrequestArray: []
+            friendrequestArray: [],
+            searchArray: [],
+            searchText: "",
+            searchIn: "all",
+            searchLimt: 0,
+            searchOffset: 0
             
         };
     }
@@ -168,16 +173,44 @@ class FriendList extends Component{
         })
     }
 
+    searchUsers = async () => {
+        const value = await AsyncStorage.getItem('@xauth');
+        const searchText = this.state.searchText;
+        searchText.replace(' ', '%');
+        const searchIn = this.state.searchIn;
+        const searchLimit = this.state.searchLimt;
+        const searchOffset = this.state.searchOffset;
+        const link = "http://10.0.2.2:3333/api/1.0.0/search?q=" + searchText + "&search_in=" + searchIn
+        + "&limit=" + searchLimit + "&offset=" + searchOffset
+
+        return fetch(link, {
+            'headers': {
+                'X-Authorization': value
+            }
+        })
+        .then((response) => {
+            console.log("searchuser response:", response.status)
+            return response.json()
+        })
+        .then((responseJson) => {
+            console.log("search array:",responseJson)
+            this.setState({ searchArray: responseJson })
+        })
+        .catch((error) => {
+            console.log(error)
+        })
+    }
+
     
     render(){
         const { navigation } = this.props;
         return(
             <View>
-                <Text>Send friend request</Text>
+                <Text style={styles.sectionBorder}>Send friend request:</Text>
                 <TextInput onChangeText={(sendFriendId) => this.setState({ sendFriendId })} style={styles.textbox} placeholder='Friend User ID Here' />
                 <Button onPress={() => this.sendFriendRequest()} title='Send friend request' />
                 
-                <Text>Outstanding Friend requests</Text>
+                <Text style={styles.sectionBorder}>Outstanding Friend requests:</Text>
                 <FlatList data={this.state.friendrequestArray}
                 renderItem={({item}) => (
                     <View>
@@ -190,7 +223,7 @@ class FriendList extends Component{
                 />
 
 
-                <Text>Friend list</Text>
+                <Text style={styles.sectionBorder}>Friend list:</Text>
                 <FlatList
                 data={this.state.friendsarray} 
                 renderItem={({item}) => (
@@ -200,7 +233,24 @@ class FriendList extends Component{
 
                 )}
                 />
-
+                
+                <Text style={styles.sectionBorder}>Search users:</Text>
+                <TextInput style={styles.textbox} placeholder='Search here' onChangeText={(searchText) => this.setState({ searchText })} />
+                <Text>Search in friends or all?</Text>
+                <TextInput style={styles.textbox} placeholder='friends or all' onChangeText={(searchIn) => this.setState({searchIn})} />
+                <Text>Limit search results</Text>
+                <TextInput style={styles.textbox} placeholder='Search limit number' onChangeText={(searchLimit) => this.setState({searchLimit})} />
+                <Text>Offset items</Text>
+                <TextInput style={styles.textbox} placeholder='Skip amount' onChangeText={(searchOffset) => this.setState({searchOffset})} />
+                <Button onPress={() => this.searchUsers()} title='Search'/>
+                <FlatList
+                data={this.state.searchArray}
+                renderItem={({item}) => (
+                    <View>
+                        <Text>ID: {item.user_id}, Name: {item.user_givenname}</Text>
+                    </View>
+                )}
+                />
             </View>
         )
     }
