@@ -134,7 +134,9 @@ class PostScr extends Component {
             })
     }
 
-    
+
+
+
 
     render() {
         const { navigation } = this.props;
@@ -157,6 +159,7 @@ class PostScr extends Component {
                 <Text>Time posted: {this.state.selectedPostTime}</Text>
                 <Text>Text: {this.state.selectedPostText}</Text>
                 <Text>Likes: {this.state.selectedPostLikes}</Text>
+                <Button title='Delete' onPress={() => this.deleteSelectedPost(item.author.user_id,item.post_id)} />
             </View>
         )
     }
