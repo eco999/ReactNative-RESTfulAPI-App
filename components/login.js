@@ -5,12 +5,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const styles = StyleSheet.create(
     {
         textbox: { borderWidth: 1, padding: 3, marginBottom: 5 },
-        container: { marginBottom: 5 }
+        container: { marginBottom: 5 },
+        sectionBorder: { fontSize: 20, marginTop: 5, borderTopWidth: 2, padding: 3 }
     });
 
 
 
-const storeData = async (itemName ,value) => {
+const storeData = async (itemName, value) => {
     try {
         await AsyncStorage.setItem(itemName, value)
     } catch (e) {
@@ -78,7 +79,7 @@ class CreateUser extends Component {
         const { navigation } = this.props;
         return (
             <View style={styles.container} >
-                <Text>{this.state.firstName}</Text>
+                <Text style={styles.sectionBorder}>Create User</Text>
                 <TextInput onChangeText={(firstName) => this.setState({ firstName })} style={styles.textbox} placeholder='First name here' />
                 <TextInput onChangeText={(lastName) => this.setState({ lastName })} style={styles.textbox} placeholder='Last name here' />
                 <TextInput onChangeText={(email) => this.setState({ email })} style={styles.textbox} placeholder='Email here' />
@@ -130,8 +131,8 @@ class LoginUser extends Component {
                 console.log(responsebody.id)
                 if (responseJson.token) {
                     console.log("success login")
-                    storeData('@xauth',responsebody.token)
-                    storeData('@id',responsebody.id.toString())
+                    storeData('@xauth', responsebody.token)
+                    storeData('@id', responsebody.id.toString())
                     navigation.replace('User')
                 }
             })
@@ -144,7 +145,7 @@ class LoginUser extends Component {
         const { navigation } = this.props;
         return (
             <View>
-                <Text>Login</Text>
+                <Text style={styles.sectionBorder}>Login</Text>
                 <TextInput defaultValue='qwe@gmail.com' onChangeText={(email) => this.setState({ email })} style={styles.textbox} placeholder='Email here' />
                 <TextInput defaultValue='qwerty' secureTextEntry={true} onChangeText={(password) => this.setState({ password })} style={styles.textbox} placeholder='Password here' />
                 <Button onPress={() => { this.loginUser(); }} title="Login"></Button>

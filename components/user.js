@@ -1,12 +1,13 @@
 import 'react-native-gesture-handler'
 import React, { Component } from 'react';
-import { Image, StyleSheet, View, Text, TextInput, Button, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create(
     {
         textbox: { borderWidth: 1, padding: 3, marginBottom: 5 },
-        container: { marginBottom: 5 }
+        container: { marginBottom: 5 },
+        sectionBorder: { fontSize: 20, marginTop: 5, borderTopWidth: 2, padding: 3 }
     });
 
 const getASyncData = async (itemName) => {
@@ -23,13 +24,13 @@ const getASyncData = async (itemName) => {
 
 const removeValue = async (itemName) => {
     try {
-      await AsyncStorage.removeItem(itemName)
-    } catch(e) {
-      // remove error
+        await AsyncStorage.removeItem(itemName)
+    } catch (e) {
+        // remove error
     }
-  
+
     console.log('Done.')
-  }
+}
 
 
 class UserInformation extends Component {
@@ -143,10 +144,9 @@ class UserInformation extends Component {
             },
         })
             .then((response) => {
-            if(response.status === 200)
-            {
-                console.log("logged out")
-            }
+                if (response.status === 200) {
+                    console.log("logged out")
+                }
             })
             .then((responseJson) => {
                 removeValue('@xauth')
@@ -169,17 +169,19 @@ class UserInformation extends Component {
                 <Text>Last name: {this.state.lastName}</Text>
                 <Text>Email: {this.state.email}</Text>
 
-                <Text>Update info</Text>
+                <Text style={styles.sectionBorder}>Update info</Text>
                 <TextInput onChangeText={(firstNameInput) => this.setState({ firstNameInput })} style={styles.textbox} placeholder='First name here' />
                 <TextInput onChangeText={(lastNameInput) => this.setState({ lastNameInput })} style={styles.textbox} placeholder='Last name here' />
                 <TextInput onChangeText={(emailInput) => this.setState({ emailInput })} style={styles.textbox} placeholder='Email here' />
                 <TextInput secureTextEntry={true} onChangeText={(passwordInput) => this.setState({ passwordInput })} style={styles.textbox} placeholder='Password here' />
                 <Button onPress={() => this.updateUser()} title="Update"></Button>
 
-                <Text>View friends</Text>
+                <Text style={styles.sectionBorder}>View friends</Text>
                 <Button title='View friends' onPress={() => navigation.navigate('Friend')} />
-                <Text>Logout</Text>
-                <Button title='Logout' onPress={() => {this.logOut();}} />
+                <Text style={styles.sectionBorder}>Posts</Text>
+                <Button title='View posts' onPress={() => navigation.navigate('Post')} />
+                <Text style={styles.sectionBorder}>Logout</Text>
+                <Button title='Logout' onPress={() => { this.logOut(); }} />
             </View>
 
         )

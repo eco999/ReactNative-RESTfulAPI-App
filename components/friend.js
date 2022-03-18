@@ -8,7 +8,7 @@ const styles = StyleSheet.create(
     {
         textbox: { borderWidth: 1, padding: 3, marginBottom: 5 },
         container: { marginBottom: 5 },
-        sectionBorder: { fontSize: 20 , marginTop: 5, borderTopWidth: 2, padding: 3}
+        sectionBorder: { fontSize: 20, marginTop: 5, borderTopWidth: 2, padding: 3 }
     });
 
 const getASyncData = async (itemName) => {
@@ -23,8 +23,8 @@ const getASyncData = async (itemName) => {
     }
 }
 
-class FriendList extends Component{
-    
+class FriendList extends Component {
+
     constructor(props) {
         super(props);
 
@@ -38,24 +38,25 @@ class FriendList extends Component{
             searchIn: "all",
             searchLimt: 0,
             searchOffset: 0
-            
+
         };
     }
-    
-    
+
+
     componentDidMount() {
         console.log("mounted");
         getASyncData('@id').then((val) => this.setState({ id: parseInt(val) }))
-        .then(() =>{this.getFriendList();
-        this.getFriendRequests();
-        })
+            .then(() => {
+                this.getFriendList();
+                this.getFriendRequests();
+            })
 
     }
-    
+
     getFriendList = async () => {
         const value = await AsyncStorage.getItem('@xauth');
         const id = this.state.id;
-        const link = "http://10.0.2.2:3333/api/1.0.0/user/" + id+"/friends";
+        const link = "http://10.0.2.2:3333/api/1.0.0/user/" + id + "/friends";
         return fetch(link, {
             'headers': {
                 'X-Authorization': value
@@ -71,42 +72,39 @@ class FriendList extends Component{
                 }
             })
             .then((responseJson) => {
-                this.setState({ friendsarray: responseJson})
-                console.log("friend array: ",responseJson)
+                this.setState({ friendsarray: responseJson })
+                console.log("friend array: ", responseJson)
             })
             .catch((error) => {
                 console.log(error);
             })
     }
-    
+
     sendFriendRequest = async () => {
         const value = await AsyncStorage.getItem('@xauth');
         const id = this.state.sendFriendId;
-        const link = "http://10.0.2.2:3333/api/1.0.0/user/" + id +"/friends"
+        const link = "http://10.0.2.2:3333/api/1.0.0/user/" + id + "/friends"
         return fetch(link, {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Authorization': value
             },
-            
+
         })
             .then((response) => {
-            console.log(response.status);
-            if(response.status === 201)
-            {
-                Alert.alert("friend request sent")
-            }
-            if(response.status === 403)
-            {
-                Alert.alert("friend request already sent")
-            }
-            if(response.status === 500)
-            {
-                Alert.alert("friend id not valid/server error")
-            }
+                console.log(response.status);
+                if (response.status === 201) {
+                    Alert.alert("friend request sent")
+                }
+                if (response.status === 403) {
+                    Alert.alert("friend request already sent")
+                }
+                if (response.status === 500) {
+                    Alert.alert("friend id not valid/server error")
+                }
             })
-            
+
             .catch((error) => {
                 console.log(error);
             })
@@ -114,7 +112,7 @@ class FriendList extends Component{
 
     getFriendRequests = async () => {
         const value = await AsyncStorage.getItem('@xauth');
-        
+
         const link = "http://10.0.2.2:3333/api/1.0.0/friendrequests"
 
         return fetch(link, {
@@ -122,55 +120,55 @@ class FriendList extends Component{
                 'X-Authorization': value
             }
         })
-        .then((response) => {
-            console.log("req array response",response.status)
-            return response.json()
-        })
-        .then((responseJson) => {
-            console.log("req array:",responseJson)
-            this.setState({ friendrequestArray: responseJson })
-        })
-        .catch((error) => {
-            console.log(error);
-        })
+            .then((response) => {
+                console.log("req array response", response.status)
+                return response.json()
+            })
+            .then((responseJson) => {
+                console.log("req array:", responseJson)
+                this.setState({ friendrequestArray: responseJson })
+            })
+            .catch((error) => {
+                console.log(error);
+            })
     }
-    
+
     acceptReq = async (id) => {
         const value = await AsyncStorage.getItem('@xauth');
         const link = "http://10.0.2.2:3333/api/1.0.0/friendrequests/" + id
-        
+
         return fetch(link, {
             method: 'post',
             'headers': {
                 'X-Authorization': value
             }
         })
-        .then((response)=> {
-            console.log("accept req response:", response.status)
-            this.getFriendRequests();
-        })
-        .catch((error) => {
-            console.log(error);
-        })
+            .then((response) => {
+                console.log("accept req response:", response.status)
+                this.getFriendRequests();
+            })
+            .catch((error) => {
+                console.log(error);
+            })
     }
 
     deleteReq = async (id) => {
         const value = await AsyncStorage.getItem('@xauth');
         const link = "http://10.0.2.2:3333/api/1.0.0/friendrequests/" + id
-        
+
         return fetch(link, {
             method: 'delete',
             'headers': {
                 'X-Authorization': value
             }
         })
-        .then((response)=> {
-            console.log("delete req response:", response.status)
-            this.getFriendRequests();
-        })
-        .catch((error) => {
-            console.log(error);
-        })
+            .then((response) => {
+                console.log("delete req response:", response.status)
+                this.getFriendRequests();
+            })
+            .catch((error) => {
+                console.log(error);
+            })
     }
 
     searchUsers = async () => {
@@ -181,75 +179,75 @@ class FriendList extends Component{
         const searchLimit = this.state.searchLimt;
         const searchOffset = this.state.searchOffset;
         const link = "http://10.0.2.2:3333/api/1.0.0/search?q=" + searchText + "&search_in=" + searchIn
-        + "&limit=" + searchLimit + "&offset=" + searchOffset
+            + "&limit=" + searchLimit + "&offset=" + searchOffset
 
         return fetch(link, {
             'headers': {
                 'X-Authorization': value
             }
         })
-        .then((response) => {
-            console.log("searchuser response:", response.status)
-            return response.json()
-        })
-        .then((responseJson) => {
-            console.log("search array:",responseJson)
-            this.setState({ searchArray: responseJson })
-        })
-        .catch((error) => {
-            console.log(error)
-        })
+            .then((response) => {
+                console.log("searchuser response:", response.status)
+                return response.json()
+            })
+            .then((responseJson) => {
+                console.log("search array:", responseJson)
+                this.setState({ searchArray: responseJson })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
-    
-    render(){
+
+    render() {
         const { navigation } = this.props;
-        return(
+        return (
             <View>
                 <Text style={styles.sectionBorder}>Send friend request:</Text>
                 <TextInput onChangeText={(sendFriendId) => this.setState({ sendFriendId })} style={styles.textbox} placeholder='Friend User ID Here' />
                 <Button onPress={() => this.sendFriendRequest()} title='Send friend request' />
-                
+
                 <Text style={styles.sectionBorder}>Outstanding Friend requests:</Text>
                 <FlatList data={this.state.friendrequestArray}
-                renderItem={({item}) => (
-                    <View>
-                        <Text>ID: {item.user_id}, Name: {item.first_name} {item.last_name}</Text>
-                        <Button title="Accept" onPress={() => this.acceptReq(item.user_id)} />
-                        <Button title="Delete" onPress={() => this.deleteReq(item.user_id)} />
-                    </View>
-                
-                )}
+                    renderItem={({ item }) => (
+                        <View>
+                            <Text>ID: {item.user_id}, Name: {item.first_name} {item.last_name}</Text>
+                            <Button title="Accept" onPress={() => this.acceptReq(item.user_id)} />
+                            <Button title="Delete" onPress={() => this.deleteReq(item.user_id)} />
+                        </View>
+
+                    )}
                 />
 
 
                 <Text style={styles.sectionBorder}>Friend list:</Text>
                 <FlatList
-                data={this.state.friendsarray} 
-                renderItem={({item}) => (
-                    <View>
-                      <Text>ID: {item.user_id}, Name: {item.user_givenname} {item.user_familyname}</Text>
-                    </View>
+                    data={this.state.friendsarray}
+                    renderItem={({ item }) => (
+                        <View>
+                            <Text>ID: {item.user_id}, Name: {item.user_givenname} {item.user_familyname}</Text>
+                        </View>
 
-                )}
+                    )}
                 />
-                
+
                 <Text style={styles.sectionBorder}>Search users:</Text>
                 <TextInput style={styles.textbox} placeholder='Search here' onChangeText={(searchText) => this.setState({ searchText })} />
                 <Text>Search in friends or all?</Text>
-                <TextInput style={styles.textbox} placeholder='friends or all' onChangeText={(searchIn) => this.setState({searchIn})} />
+                <TextInput style={styles.textbox} placeholder='friends or all' onChangeText={(searchIn) => this.setState({ searchIn })} />
                 <Text>Limit search results</Text>
-                <TextInput style={styles.textbox} placeholder='Search limit number' onChangeText={(searchLimit) => this.setState({searchLimit})} />
+                <TextInput style={styles.textbox} placeholder='Search limit number' onChangeText={(searchLimit) => this.setState({ searchLimit })} />
                 <Text>Offset items</Text>
-                <TextInput style={styles.textbox} placeholder='Skip amount' onChangeText={(searchOffset) => this.setState({searchOffset})} />
-                <Button onPress={() => this.searchUsers()} title='Search'/>
+                <TextInput style={styles.textbox} placeholder='Skip amount' onChangeText={(searchOffset) => this.setState({ searchOffset })} />
+                <Button onPress={() => this.searchUsers()} title='Search' />
                 <FlatList
-                data={this.state.searchArray}
-                renderItem={({item}) => (
-                    <View>
-                        <Text>ID: {item.user_id}, Name: {item.user_givenname}</Text>
-                    </View>
-                )}
+                    data={this.state.searchArray}
+                    renderItem={({ item }) => (
+                        <View>
+                            <Text>ID: {item.user_id}, Name: {item.user_givenname}</Text>
+                        </View>
+                    )}
                 />
             </View>
         )

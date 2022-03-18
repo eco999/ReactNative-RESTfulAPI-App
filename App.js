@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './components/login';
 import UserScreen from './components/user';
 import FriendScreen from './components/friend'
+import PostScreen from './components/post'
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ class App extends Component {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="User" component={UserScreen} />
           <Stack.Screen name="Friend" component={FriendScreen} />
+          <Stack.Screen name="Post" component={PostScreen} />
 
         </Stack.Navigator>
       </NavigationContainer>
@@ -24,6 +26,5 @@ class App extends Component {
   }
 }
 
-//<Button onPress={() => getData().then(thing => console.log(thing))} title="Test async"></Button>
 
 export default App;
