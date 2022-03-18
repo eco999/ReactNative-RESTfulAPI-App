@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler'
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TextInput, Button, Alert } from 'react-native';
+import { Image, StyleSheet, View, Text, TextInput, Button, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create(
@@ -22,7 +22,6 @@ const getASyncData = async (itemName) => {
 }
 
 
-
 class UserInformation extends Component {
 
     constructor(props) {
@@ -36,7 +35,8 @@ class UserInformation extends Component {
             firstNameInput: "",
             lastNameInput: "",
             emailInput: "",
-            passwordInput: ""
+            passwordInput: "",
+            image: ""
         };
     }
 
@@ -45,6 +45,7 @@ class UserInformation extends Component {
         getASyncData('@id').then((val) => this.setState({ id: parseInt(val) })).then(this.getData())
 
     }
+
 
     getData = async () => {
         const value = await AsyncStorage.getItem('@xauth');
@@ -69,33 +70,34 @@ class UserInformation extends Component {
                     firstName: responseJson.first_name,
                     lastName: responseJson.last_name,
                     email: responseJson.email
-                })
+                });
             })
             .catch((error) => {
                 console.log(error);
             })
     }
 
+
     updateUser = async () => {
         let to_send = {};
-    
-        if (this.state.firstNameInput.length !== 0){
-          to_send['first_name'] = this.state.firstNameInput;
+
+        if (this.state.firstNameInput.length !== 0) {
+            to_send['first_name'] = this.state.firstNameInput;
         }
-    
-        if (this.state.lastNameInput.length !== 0){
+
+        if (this.state.lastNameInput.length !== 0) {
             to_send['last_name'] = this.state.lastNameInput;
         }
 
-        if (this.state.emailInput.length !== 0){
+        if (this.state.emailInput.length !== 0) {
             to_send['email'] = this.state.emailInput;
         }
 
-        if (this.state.passwordInput.length !== 0){
+        if (this.state.passwordInput.length !== 0) {
             to_send['password'] = this.state.passwordInput;
         }
-    
-        console.log("json created: ",JSON.stringify(to_send));
+
+        console.log("json created: ", JSON.stringify(to_send));
 
         const value = await AsyncStorage.getItem('@xauth');
         const id = this.state.id;
@@ -104,24 +106,25 @@ class UserInformation extends Component {
         return fetch(link, {
             method: 'PATCH',
             headers: {
-              'content-type': 'application/json',
-              'X-Authorization': value
+                'content-type': 'application/json',
+                'X-Authorization': value
             },
             body: JSON.stringify(to_send)
         })
-        .then((response) => {
-          console.log("User updated");
-          this.getData();
-          
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-      }
+            .then((response) => {
+                console.log("User updated");
+                this.getData();
+
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
 
 
 
     render() {
+        const { navigation } = this.props;
         return (
             <View style={styles.container}>
                 <Text>Your User ID: {this.state.id}</Text>
@@ -135,6 +138,9 @@ class UserInformation extends Component {
                 <TextInput onChangeText={(emailInput) => this.setState({ emailInput })} style={styles.textbox} placeholder='Email here' />
                 <TextInput secureTextEntry={true} onChangeText={(passwordInput) => this.setState({ passwordInput })} style={styles.textbox} placeholder='Password here' />
                 <Button onPress={() => this.updateUser()} title="Update"></Button>
+
+                <Text>View friends</Text>
+                <Button title='View friends' onPress={() => navigation.navigate('Friend')} />
             </View>
 
         )
@@ -142,12 +148,12 @@ class UserInformation extends Component {
 }
 
 class Screen extends Component {
-    
+
     render() {
         const { navigation } = this.props;
         return (
             <View>
-                <UserInformation></UserInformation>
+                <UserInformation navigation={navigation}></UserInformation>
             </View>
         )
 
