@@ -29,17 +29,19 @@ class FriendList extends Component{
 
         this.state = {
             id: 0,
-            friendsarray: []
+            sendFriendId: 0,
+            friendsarray: [],
+            friendrequestArray: []
         };
     }
     
     componentDidMount() {
         console.log("mounted");
-        getASyncData('@id').then((val) => this.setState({ id: parseInt(val) })).then(this.getData())
+        getASyncData('@id').then((val) => this.setState({ id: parseInt(val) })).then(this.getFriendList())
 
     }
     
-    getData = async () => {
+    getFriendList = async () => {
         const value = await AsyncStorage.getItem('@xauth');
         const id = this.state.id;
         const link = "http://10.0.2.2:3333/api/1.0.0/user/" + id+"/friends";
@@ -66,17 +68,66 @@ class FriendList extends Component{
             })
     }
     
+    sendFriendRequest = async () => {
+        const value = await AsyncStorage.getItem('@xauth');
+        const id = this.state.sendFriendId;
+        const link = "http://10.0.2.2:3333/api/1.0.0/user/" + id +"/friends"
+        return fetch(link, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Authorization': value
+            },
+            
+        })
+            .then((response) => {response.text();
+            console.log(response.status);
+            if(response.status === 201)
+            {
+                Alert.alert("friend request sent")
+            }
+            if(response.status === 403)
+            {
+                Alert.alert("friend request already sent")
+            }
+            if(response.status === 500)
+            {
+                Alert.alert("friend id not valid/server error")
+            }
+            })
+            
+            .catch((error) => {
+                console.log(error);
+            })
+    }
     
     
     render(){
         const { navigation } = this.props;
         return(
             <View>
+                <Text>Send friend request</Text>
+                <TextInput onChangeText={(sendFriendId) => this.setState({ sendFriendId })} style={styles.textbox} placeholder='Friend User ID Here' />
+                <Button onPress={() => this.sendFriendRequest()} title='Send friend request' />
+                
+                <Text>Outstanding Friend requests</Text>
+                <FlatList data={this.state.friendrequestArray}
+                renderItem={({item}) => (
+                    <View>
+                        <Text>ID: {item.id} Name: {item.first_name} {item.last_name}</Text>
+                    </View>
+                
+                )}
+                keyExtractor={(item,index) => item.id.toString()}
+                />
+
+
+                <Text>Friend list</Text>
                 <FlatList
                 data={this.state.friendsarray} 
                 renderItem={({item}) => (
                     <View>
-                      <Text>{item.first_name} {item.last_name}</Text>
+                      <Text>ID: {item.id} Name: {item.first_name} {item.last_name}</Text>
                     </View>
                 )}
                 keyExtractor={(item,index) => item.id.toString()}
